@@ -1,0 +1,22 @@
+{
+  "name": "searchitunes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likane/searchItunes.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/likane/searchItunes/issues"
+  },
+  "homepage": "https://github.com/likane/searchItunes#readme",
+  "dependencies": {
+    "handlebars": "^4.1.2"
+  }
+}
