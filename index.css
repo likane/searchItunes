@@ -20,7 +20,7 @@ button {
 }
 
 .row {
-  max-height: 325px;
+  min-height: 325px;
   display: inline-box;
   overflow: hidden;
   white-space: nowrap;
@@ -32,7 +32,15 @@ ul {
 }
 
 li {
-  float: left;
+  /* float: left; */
   margin: 5px 5px 5px 5px;
   display: inline;
+}
+
+.favoriteHeader {
+  background: linear-gradient(-45deg, #19deea, #9c4feb);
+}
+
+.resultHeader {
+  background: linear-gradient(-45deg, #19deea, #9c4feb);
 }
