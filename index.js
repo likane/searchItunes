@@ -96,16 +96,21 @@ function fetchData(inputValue) {
 function displayResults(valueArr) {
   console.log("displayresults hit");
   var resultsList = document.getElementById("resultsSection");
+  var h3 = document.createElement("h3");
   if (searched === false) {
     console.log("searched = false");
 
     //resultsBody.classList.add("")
     //resultsBody.innerHTML = "<h3>";
-    var h3 = document.createElement("h3");
-    h3.innerHTML = "Please search for an artist";
-    resultsList.appendChild(h3);
+    // h3.classList.add("searchPrompt");
+    // h3.innerHTML = "Please search for an artist";
+    // resultsList.appendChild(h3);
   } else if (searched === true && valueArr != null) {
     console.log("searched = true and arr not null");
+    //h3.removeChile(h3.childNodes[0]);
+    //var resultsPromptText = document.getElementsByClassName("searchPrompt");
+    //resultsPromptText.remove();
+    // h3.style.display = "none";
     //var resultsList = document.getElementById("resultsSection");
     var uList = document.createElement("ul");
     //uList.classList.add("list-group");
@@ -156,14 +161,11 @@ function displayResults(valueArr) {
     listItem.appendChild(newCard);
     uList.appendChild(listItem);
     resultsList.appendChild(uList);
-    // }
-    // }
   } else {
-    var resultsList = document.getElementById("resultsSection");
     //resultsBody.classList.add("")
     //resultsBody.innerHTML = "<h3>";
-    var h3 = document.createElement("h3");
-    h3.innerHTML = "Your search failed";
+    var h3two = document.createElement("h3");
+    h3two.innerHTML = "Your search failed";
   }
 }
 
@@ -172,8 +174,8 @@ function storeFavorites() {
   console.log("savedCount= " + savedCount);
 
   try {
-    var savedItemName = valueArr[1];
-    var savedArtistName = valueArr[2];
+    var savedItemName = trackname;
+    var savedArtistName = artistname;
 
     savedItemNameArr.push(savedArtistName);
     savedArtistNameArr.push(savedArtistName);
