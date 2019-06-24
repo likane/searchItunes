@@ -1,6 +1,7 @@
 var inputValue = "";
 var searched = false;
-var hasFavorites = false;
+var savedCount = 0;
+var favoritesList;
 var track;
 var trackname;
 var artistname;
@@ -8,6 +9,8 @@ var artwork;
 var genrelink;
 var urllink;
 var valueArr = [null];
+var savedItemNameArr = [null];
+var savedArtistNameArr = [null];
 
 function checkData() {
   //set search value to a var
@@ -63,15 +66,14 @@ function fetchData(inputValue) {
         track = responseTypes.trackId;
         trackname = responseTypes.trackName;
         artistname = responseTypes.artistName;
-        artwork = responseTypes.artworkUrl30;
+        artwork = responseTypes.artworkUrl100;
         genrelink = responseTypes.primaryGenreName;
         urllink = responseTypes.previewUrl;
         valueArr = [track, trackname, artistname, artwork, genrelink, urllink];
         searched = true;
-        //var valueArr = [""];
+
         console.log(valueArr);
         displayResults(valueArr);
-        //return valueArr;
       });
     })
     .catch(function(err) {
@@ -106,15 +108,12 @@ function displayResults(valueArr) {
     console.log("searched = true and arr not null");
     //var resultsList = document.getElementById("resultsSection");
     var uList = document.createElement("ul");
-    // var listItem = document.createElement("li");
-    // var title = document.createElement("h4");
-    // title.innerHTML = "test";
-    // listItem.appendChild(title);
-    // uList.appendChild(listItem);
+    //uList.classList.add("list-group");
+    //uList.classList.add("list-group-horizontal");
     resultsList.appendChild(uList);
-    // iterate through each valueArr
-    // for (var i = 0; i < valueArr.length; i++) {
+
     var listItem = document.createElement("li");
+    listItem.classList.add("rounded");
     var newCard = document.createElement("div");
     newCard.classList.add("card");
     var newCardBody = document.createElement("div");
@@ -128,17 +127,31 @@ function displayResults(valueArr) {
     var trackIDP = document.createElement("p");
     trackIDP.classList.add("card-text");
     trackIDP.innerHTML = valueArr[0];
-    var trackImageImg = document.createElement("p");
-    trackImageImg.classList.add("card-text");
-    trackImageImg.innerHTML = valueArr[3];
+    var trackImageImg = document.createElement("img");
+    trackImageImg.classList.add("card-img-top");
+    trackImageImg.src = valueArr[3];
     var genreP = document.createElement("p");
     genreP.classList.add("card-text");
     genreP.innerHTML = valueArr[4];
     var trackViewP = document.createElement("p");
     trackViewP.classList.add("card-text");
     trackViewP.innerHTML = valueArr[5];
+    var favoriteButton = document.createElement("button");
+    favoriteButton.classList.add("btn");
+    favoriteButton.addEventListener("click", storeFavorites(), false);
+    favoriteButton.innerHTML = "favorite";
 
-    newCardBody.appendChild(newH5);
+    newCardBody.innerHTML +=
+      newH5.outerHTML +
+      artistP.outerHTML +
+      genreP.outerHTML +
+      trackViewP.outerHTML +
+      favoriteButton.outerHTML;
+
+    //newCard.appendChild(trackImageImg);
+    newCard.appendChild(trackImageImg);
+    //newCardBody.appendChild(newH5, genreP, trackViewP);
+    //newCardBody.appendChild(artistP);
     newCard.appendChild(newCardBody);
     listItem.appendChild(newCard);
     uList.appendChild(listItem);
@@ -154,13 +167,30 @@ function displayResults(valueArr) {
   }
 }
 
+function storeFavorites() {
+  savedCount = savedCount + 1;
+  console.log("savedCount= " + savedCount);
+
+  try {
+    var savedItemName = valueArr[1];
+    var savedArtistName = valueArr[2];
+
+    savedItemNameArr.push(savedArtistName);
+    savedArtistNameArr.push(savedArtistName);
+    localStorage.setItem(savedItemNameArr, savedArtistNameArr, savedCount);
+    favoritesResults();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 function favoritesResults() {
-  if (hasFavorites === false) {
-    var favoritesList = document.getElementById("favoritesSection");
-    //resultsBody.classList.add("")
-    //resultsBody.innerHTML = "<h3>";
-    var h3 = document.createElement("h3");
-    h3.innerHTML = "Please search for an artist";
-    favoritesList.appendChild(h3);
+  favoritesList = document.getElementById("favoritesBody");
+  if (savedCount === 0) {
+    favoritesList.style.display = "none";
+  } else {
+    favoritesList.style.display = "block";
+    console.log(savedItemNameArr);
+    console.log(savedArtistNameArr);
   }
 }
