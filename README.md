@@ -14,10 +14,10 @@
 
 #### off-white: aliceblue
 
-##GitHub Link:
+## GitHub Link:
 
 ##### https://github.com/likane/searchItunes
 
-##For Test:
+## For Test:
 
 #### Update TEST_ENV globabl var to 'true'
