@@ -1,18 +1,12 @@
-var TEST_ENV = true;
+var TEST_ENV = false;
 var inputValue = "";
 var searched = false;
 var savedCount = 0;
 var hasFav = false;
 var valueArr = [null];
-var savedItemNameArr = [null];
-var savedArtistNameArr = [null];
+var savedItemIdArr = [null];
 var favoritesList;
-// var track;
-// var trackname;
-// var artistname;
-// var artwork;
-// var genrelink;
-// var urllink;
+var track;
 
 // Initialize Favorites section depending on saved data in browser
 showFavorites();
@@ -74,7 +68,7 @@ function checkData() {
   2) GET api data from itunes search link
   3) set api JSON response to result array
   4) set searched = true
-  4) Call displayResults()
+  5) Call displayResults()
 */
 function fetchData(inputValue) {
   let URL = `https://itunes.apple.com/search?term=${inputValue}&limit=10`;
@@ -96,7 +90,7 @@ function fetchData(inputValue) {
       let responseTypes = data.results;
 
       return responseTypes.map(function(responseTypes) {
-        var track = responseTypes.trackId;
+        track = responseTypes.trackId;
         var trackname = responseTypes.trackName;
         var artistname = responseTypes.artistName;
         var artwork = responseTypes.artworkUrl100;
@@ -106,14 +100,14 @@ function fetchData(inputValue) {
         searched = true;
         displayResults(valueArr);
 
-        if (TES_ENV) {
+        if (TEST_ENV) {
           // let track = console.log("trackId: " + responseTypes.trackId);
           // let trackname = console.log("trackName: " + responseTypes.trackName);
           // let artistname = console.log("ArtistName: " + responseTypes.artistName);
           // let artwork = console.log("artworkUrl: " + responseTypes.artworkUrl30);
           // let genre = console.log("genre: " + responseTypes.primaryGenreName);
           // let url = console.log("URL: " + responseTypes.previewUrl);
-          //console.log(valueArr);
+          console.log(valueArr);
         }
       });
     })
@@ -139,8 +133,7 @@ function fetchData(inputValue) {
   1) input param: valueArr / JSON response values from itunes API
   2) create dynamic HTML elements for each valueArr instance
   3) set api JSON response to result array
-  4) set searched = true
-  4) Call displayResults()
+  
 */
 function displayResults(valueArr) {
   if (TEST_ENV) {
@@ -196,9 +189,9 @@ function displayResults(valueArr) {
     var trackViewP = document.createElement("p");
     trackViewP.classList.add("card-text");
     trackViewP.innerHTML = valueArr[5];
-    var favoriteButton = document.createElement("button");
-    favoriteButton.classList.add("btn");
-    //favoriteButton.addEventListener("click", storeFavorites(), false);
+    var favoriteButton = document.createElement("span");
+    favoriteButton.classList.add("badge");
+    //favoriteButton.onclick = storeFavorites(this.trackIDP);
     favoriteButton.innerHTML = "favorite";
 
     newCardBody.innerHTML +=
@@ -219,30 +212,156 @@ function displayResults(valueArr) {
   }
 }
 
-function storeFavorites() {
+/*
+  1) count number of favorited objects
+  2) save object items to browser storage
+  3) call favoritesResults() upon succesful save to browser storage
+*/
+function storeFavorites(favTrackID) {
+  if (TEST_ENV) {
+    console.log("storeFavorites: savedCount= " + savedCount);
+  }
   savedCount = savedCount + 1;
-  console.log("storeFavorites: savedCount= " + savedCount);
 
   try {
-    var savedItemName = trackname;
-    var savedArtistName = artistname;
-
-    savedItemNameArr.push(savedItemName);
-    savedArtistNameArr.push(savedArtistName);
-    localStorage.setItem(savedItemNameArr, savedArtistNameArr, savedCount);
+    hasFav = true;
+    savedItemIdArr.push(favTrackID);
+    console.log("savedItem= " + savedItemIdArr);
+    //savedArtistNameArr.push(savedArtistName);
+    localStorage.setItem("savedItems", savedItemIdArr);
     favoritesResults();
   } catch (err) {
     console.log(err);
   }
 }
 
+/*
+  1) SEE API RESULTS METHOD ABOVE
+*/
 function favoritesResults() {
   favoritesList = document.getElementById("favoritesBody");
-  if (savedCount === 0) {
-    favoritesList.style.display = "none";
+  let saved = localStorage.getItem("saveItems");
+
+  // if (savedCount === 0 || hasFav === false)
+  if (saved === null && savedItemIdArr === null) {
+    document.getElementById("favoritesBody").style.display = "none";
   } else {
-    favoritesList.style.display = "block";
-    console.log(savedItemNameArr);
-    console.log(savedArtistNameArr);
+    document.getElementById("favoritesBody").style.display = "block";
+    for (var j = 0; j < saved.length; j++) {
+      // var favId = savedItemIdArr[j];
+      var favId = saved[j];
+      let URL = `https://itunes.apple.com/lookup?id=${favId}&limit=1`;
+
+      if (TEST_ENV) {
+      }
+
+      fetch(URL)
+        .then(function(response) {
+          return response.json();
+        })
+        // .then(function(myJson) {
+        //   console.log(JSON.stringify(myJson));
+        // })
+        .then(function(data) {
+          let favResponseTypes = data.results;
+
+          return favResponseTypes.map(function(favResponseTypes) {
+            var favTrack = favResponseTypes.trackId;
+            var favTrackName = favResponseTypes.trackName;
+            var favArtistName = favResponseTypes.artistName;
+            var favArtwork = favResponseTypes.artworkUrl100;
+            var favGenrelink = favResponseTypes.primaryGenreName;
+            var favUrllink = favResponseTypes.previewUrl;
+            favValueArr = [
+              favTrack,
+              favTrackName,
+              favArtistName,
+              favArtwork,
+              favGenrelink,
+              favUrllink
+            ];
+
+            displayFavResults(favValueArr);
+
+            if (TEST_ENV) {
+              // let track = console.log("trackId: " + responseTypes.trackId);
+              // let trackname = console.log("trackName: " + responseTypes.trackName);
+              // let artistname = console.log("ArtistName: " + responseTypes.artistName);
+              // let artwork = console.log("artworkUrl: " + responseTypes.artworkUrl30);
+              // let genre = console.log("genre: " + responseTypes.primaryGenreName);
+              // let url = console.log("URL: " + responseTypes.previewUrl);
+              console.log(favValueArr);
+            }
+          });
+        })
+        .catch(function(err) {
+          console.log("response failed", err);
+        });
+    }
+
+    if (TEST_ENV) {
+      // console.log(savedItemNameArr);
+      // console.log(savedArtistNameArr);
+    }
+  }
+}
+
+/*
+  1) see results method above
+  
+*/
+function displayFavResults(favValueArr) {
+  if (TEST_ENV) {
+    console.log("displayFavresults hit");
+  }
+
+  var favResultsList = document.getElementById("favoritesSection");
+
+  if (favValueArr != null) {
+    if (TEST_ENV) {
+      console.log("fav searched = true and arr not null");
+    }
+    var favUList = document.createElement("ul");
+    favResultsList.appendChild(favUList);
+
+    var favListItem = document.createElement("li");
+    favListItem.classList.add("rounded");
+    var favNewCard = document.createElement("div");
+    favNewCard.classList.add("card");
+    var newCardBody = document.createElement("div");
+    newCardBody.classList.add("card-body");
+    var newH5 = document.createElement("h5");
+    newH5.classList.add("card-title");
+    newH5.innerHTML = valueArr[1];
+    var artistP = document.createElement("p");
+    artistP.classList.add("card-text");
+    artistP.innerHTML = valueArr[2];
+    var trackIDP = document.createElement("p");
+    trackIDP.classList.add("card-text");
+    trackIDP.innerHTML = valueArr[0];
+    var trackImageImg = document.createElement("img");
+    trackImageImg.classList.add("card-img-top");
+    trackImageImg.src = valueArr[3];
+    var genreP = document.createElement("p");
+    genreP.classList.add("card-text");
+    genreP.innerHTML = valueArr[4];
+    var trackViewP = document.createElement("p");
+    trackViewP.classList.add("card-text");
+    trackViewP.innerHTML = valueArr[5];
+
+    newCardBody.innerHTML +=
+      newH5.outerHTML +
+      artistP.outerHTML +
+      genreP.outerHTML +
+      trackViewP.outerHTML;
+
+    favNewCard.appendChild(trackImageImg);
+    favNewCard.appendChild(newCardBody);
+    favListItem.appendChild(favNewCard);
+    favUList.appendChild(favListItem);
+    favResultsList.appendChild(favUList);
+  } else {
+    var displayAlert = document.createElement("h3");
+    displayAlert.innerHTML = "Your search failed";
   }
 }

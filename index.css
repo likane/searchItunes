@@ -1,3 +1,8 @@
+body {
+  background-color: #383636;
+  height: 100%;
+}
+
 .jumbotron {
   margin-bottom: 0px;
   padding-top: 80px;
@@ -18,6 +23,11 @@ h3 {
 button {
   background-color: #ff2f56 !important;
   border-color: #ff2f56 !important;
+}
+
+.badge {
+  background-color: #ff2f56 !important;
+  color: aliceblue;
 }
 
 .row {
