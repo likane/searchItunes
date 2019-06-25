@@ -20,4 +20,4 @@
 
 ## For Test:
 
-#### Update TEST_ENV globabl var to 'true'
+#### Update TEST_ENV global var to 'true'
