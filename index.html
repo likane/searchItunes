@@ -25,11 +25,16 @@
       integrity="sha384-i1LQnF23gykqWXg6jxC2ZbCbUMxyw5gLZY6UiUS98LYV5unm8GWmfkIS6jqJfb4E"
       crossorigin="anonymous"
     />
+    <!-- <script type="text/javascript">
+      document.onload = function() {
+        showFavorites();
+      };
+    </script> -->
 
     <title>Itunes Search</title>
   </head>
   <!-- onload="displayResults()" -->
-  <body onload="displayResults()">
+  <body document.onload="showFavorites()">
     <nav class="navbar navbar-dark bg-dark">
       <!-- Navbar content -->
       <a class="navbar-brand" href="#"><i class="fab fa-apple"></i></a>
@@ -75,6 +80,7 @@
     <script type="text/javascript" src="api.js"></script>
 
     <!-- Optional JavaScript -->
+
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

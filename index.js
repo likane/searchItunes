@@ -1,17 +1,38 @@
+var TEST_ENV = true;
 var inputValue = "";
 var searched = false;
 var savedCount = 0;
-var favoritesList;
-var track;
-var trackname;
-var artistname;
-var artwork;
-var genrelink;
-var urllink;
+var hasFav = false;
 var valueArr = [null];
 var savedItemNameArr = [null];
 var savedArtistNameArr = [null];
+var favoritesList;
+// var track;
+// var trackname;
+// var artistname;
+// var artwork;
+// var genrelink;
+// var urllink;
 
+// Initialize Favorites section depending on saved data in browser
+showFavorites();
+displayResults();
+
+// if there are no saved items do not show Favorites section
+function showFavorites() {
+  if (hasFav === false) {
+    document.getElementById("favoritesBody").style.display = "none";
+    console.log("showFav: SavedCount= " + savedCount);
+  } else {
+    document.getElementById("favoritesBody").style.display = "block";
+  }
+}
+
+/*
+  1) check validity of data
+  2) if there is a null space value in a string then add a '+' 
+  3) call fetchData() to return API values
+*/
 function checkData() {
   //set search value to a var
   var searchParamater = document.getElementById("searchValue").value;
@@ -20,31 +41,49 @@ function checkData() {
   // check if searchValue has a space in it
   try {
     if (searchParamater === " ") {
-      console.log("please type something into the search bar");
+      if (TEST_ENV) {
+        console.log("please type something into the search bar");
+      }
     } else if (searchParamater != null && searchParamater.indexOf(" ") > -1) {
       // Search value includes white space
       // find white space / /g and replace with '+'
       inputValue = searchParamater.replace(/ /g, "+");
-      console.log("inputValue is: " + inputValue);
+
       searched = true;
       fetchData(inputValue);
+
+      if (TEST_ENV) {
+        console.log("inputValue is: " + inputValue);
+      }
     } else {
       inputValue = searchParamater;
-      console.log("inputValue is: " + inputValue);
       searched = true;
       fetchData(inputValue);
+
+      if (TEST_ENV) {
+        console.log("inputValue is: " + inputValue);
+      }
     }
   } catch (err) {
     console.log("checkData(): " + err);
   }
 }
 
+/*
+  1) input param: inputValue / corrected input data
+  2) GET api data from itunes search link
+  3) set api JSON response to result array
+  4) set searched = true
+  4) Call displayResults()
+*/
 function fetchData(inputValue) {
-  console.log("inputValue is: " + inputValue);
   let URL = `https://itunes.apple.com/search?term=${inputValue}&limit=10`;
-  //https://cors-anywhere.herokuapp.com/
-  console.log(URL);
   searched = true;
+
+  if (TEST_ENV) {
+    console.log("inputValue is: " + inputValue);
+    console.log(URL);
+  }
 
   fetch(URL)
     .then(function(response) {
@@ -57,27 +96,29 @@ function fetchData(inputValue) {
       let responseTypes = data.results;
 
       return responseTypes.map(function(responseTypes) {
-        // let track = console.log("trackId: " + responseTypes.trackId);
-        // let trackname = console.log("trackName: " + responseTypes.trackName);
-        // let artistname = console.log("ArtistName: " + responseTypes.artistName);
-        // let artwork = console.log("artworkUrl: " + responseTypes.artworkUrl30);
-        // let genre = console.log("genre: " + responseTypes.primaryGenreName);
-        // let url = console.log("URL: " + responseTypes.previewUrl);
-        track = responseTypes.trackId;
-        trackname = responseTypes.trackName;
-        artistname = responseTypes.artistName;
-        artwork = responseTypes.artworkUrl100;
-        genrelink = responseTypes.primaryGenreName;
-        urllink = responseTypes.previewUrl;
+        var track = responseTypes.trackId;
+        var trackname = responseTypes.trackName;
+        var artistname = responseTypes.artistName;
+        var artwork = responseTypes.artworkUrl100;
+        var genrelink = responseTypes.primaryGenreName;
+        var urllink = responseTypes.previewUrl;
         valueArr = [track, trackname, artistname, artwork, genrelink, urllink];
         searched = true;
-
-        console.log(valueArr);
         displayResults(valueArr);
+
+        if (TES_ENV) {
+          // let track = console.log("trackId: " + responseTypes.trackId);
+          // let trackname = console.log("trackName: " + responseTypes.trackName);
+          // let artistname = console.log("ArtistName: " + responseTypes.artistName);
+          // let artwork = console.log("artworkUrl: " + responseTypes.artworkUrl30);
+          // let genre = console.log("genre: " + responseTypes.primaryGenreName);
+          // let url = console.log("URL: " + responseTypes.previewUrl);
+          //console.log(valueArr);
+        }
       });
     })
     .catch(function(err) {
-      console.log("fetchData(): response failed", err);
+      console.log("response failed", err);
       searched = true;
     });
 }
@@ -93,28 +134,42 @@ function fetchData(inputValue) {
             2) if no data then show body "please search"
             3) if data then iterate through each valueArr and display cards
 */
+
+/*
+  1) input param: valueArr / JSON response values from itunes API
+  2) create dynamic HTML elements for each valueArr instance
+  3) set api JSON response to result array
+  4) set searched = true
+  4) Call displayResults()
+*/
 function displayResults(valueArr) {
-  console.log("displayresults hit");
+  if (TEST_ENV) {
+    console.log("displayresults hit");
+  }
+
   var resultsList = document.getElementById("resultsSection");
-  var h3 = document.createElement("h3");
+
   if (searched === false) {
     console.log("searched = false");
 
     //resultsBody.classList.add("")
     //resultsBody.innerHTML = "<h3>";
-    // h3.classList.add("searchPrompt");
-    // h3.innerHTML = "Please search for an artist";
-    // resultsList.appendChild(h3);
+    // var resultsPromptText = document.createElement("h3");
+    // resultsPromptText.classList.add("searchPrompt");
+    // resultsPromptText.innerHTML = "Please search for an artist";
+    // resultsList.appendChild(resultsPromptText);
   } else if (searched === true && valueArr != null) {
-    console.log("searched = true and arr not null");
+    if (TEST_ENV) {
+      console.log("searched = true and arr not null");
+    }
+
     //h3.removeChile(h3.childNodes[0]);
     //var resultsPromptText = document.getElementsByClassName("searchPrompt");
     //resultsPromptText.remove();
-    // h3.style.display = "none";
+    //document.getElementByClassName("searchPrompt").style.display = "none";
     //var resultsList = document.getElementById("resultsSection");
+
     var uList = document.createElement("ul");
-    //uList.classList.add("list-group");
-    //uList.classList.add("list-group-horizontal");
     resultsList.appendChild(uList);
 
     var listItem = document.createElement("li");
@@ -143,7 +198,7 @@ function displayResults(valueArr) {
     trackViewP.innerHTML = valueArr[5];
     var favoriteButton = document.createElement("button");
     favoriteButton.classList.add("btn");
-    favoriteButton.addEventListener("click", storeFavorites(), false);
+    //favoriteButton.addEventListener("click", storeFavorites(), false);
     favoriteButton.innerHTML = "favorite";
 
     newCardBody.innerHTML +=
@@ -153,31 +208,26 @@ function displayResults(valueArr) {
       trackViewP.outerHTML +
       favoriteButton.outerHTML;
 
-    //newCard.appendChild(trackImageImg);
     newCard.appendChild(trackImageImg);
-    //newCardBody.appendChild(newH5, genreP, trackViewP);
-    //newCardBody.appendChild(artistP);
     newCard.appendChild(newCardBody);
     listItem.appendChild(newCard);
     uList.appendChild(listItem);
     resultsList.appendChild(uList);
   } else {
-    //resultsBody.classList.add("")
-    //resultsBody.innerHTML = "<h3>";
-    var h3two = document.createElement("h3");
-    h3two.innerHTML = "Your search failed";
+    var displayAlert = document.createElement("h3");
+    displayAlert.innerHTML = "Your search failed";
   }
 }
 
 function storeFavorites() {
   savedCount = savedCount + 1;
-  console.log("savedCount= " + savedCount);
+  console.log("storeFavorites: savedCount= " + savedCount);
 
   try {
     var savedItemName = trackname;
     var savedArtistName = artistname;
 
-    savedItemNameArr.push(savedArtistName);
+    savedItemNameArr.push(savedItemName);
     savedArtistNameArr.push(savedArtistName);
     localStorage.setItem(savedItemNameArr, savedArtistNameArr, savedCount);
     favoritesResults();
